@@ -24,6 +24,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import cn.tim.annotation.DIEngine;
+import cn.tim.annotation.DIProvider;
 
 @AutoService(Processor.class)
 public class DIEngineProvider extends AbstractProcessor {
@@ -35,28 +36,21 @@ public class DIEngineProvider extends AbstractProcessor {
         return Collections.singleton(DIEngine.class.getCanonicalName());
     }
 
-//    Set<String> allName = new HashSet<>();
-
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         System.out.println("add DIEngine");
 
-        Element firstElement = null;
         Set<? extends Element> engines = roundEnv.getElementsAnnotatedWith(cn.tim.annotation.DIEngine.class);
         for (Element engine : engines) {
-            String engineName = ClassName.get(engine.asType()).toString();
-//            allName.add(engineName);
-            firstElement = engine;
-
-            if (firstElement == null) {
+            if (engine == null) {
                 return true;
             }
 
             MethodSpec.Builder bindViewMethodSpecBuilder = MethodSpec.methodBuilder("get")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                    .returns(TypeName.get(firstElement.asType()));
+                    .returns(TypeName.get(engine.asType()));
 
-            String className = ClassName.get(firstElement.asType()).toString();
+            String className = ClassName.get(engine.asType()).toString();
 
             bindViewMethodSpecBuilder.addCode("" +
                     " try {\n" +
@@ -66,82 +60,19 @@ public class DIEngineProvider extends AbstractProcessor {
                     "    }\n" +
                     "    return null;");
 
-            TypeSpec typeSpec = TypeSpec.classBuilder("Provider_" + firstElement.getSimpleName())
+            TypeSpec typeSpec = TypeSpec.classBuilder("Provider_" + engine.getSimpleName())
                     .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-//                .addSuperinterface(ClassName.get("com.example.basecore","IGet"))
+                    .addAnnotation(DIProvider.class)
+//                  .addSuperinterface(ClassName.get("com.example.basecore","IGet"))
                     .addMethod(bindViewMethodSpecBuilder.build())
                     .build();
-            JavaFile javaFile = JavaFile.builder("com.a.b.c", typeSpec).build();
+            JavaFile javaFile = JavaFile.builder("com.ushareit.login.apt", typeSpec).build();
             try {
                 javaFile.writeTo(processingEnv.getFiler());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
-//
-//
-//
-//        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(DIActivity.class);
-//        for (Element element : elements) {
-//            // 判断是否Class
-//            TypeElement typeElement = (TypeElement) element;
-//            List<? extends Element> members = elementUtils.getAllMembers(typeElement);
-//
-//            MethodSpec.Builder bindViewMethodSpecBuilder = MethodSpec.methodBuilder("inject")
-//                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-//                    .returns(TypeName.VOID)
-//                    .addParameter(ClassName.get(typeElement.asType()), "activity");
-//            for (Element item : members) {
-//
-//                DIObject object = item.getAnnotation(DIObject.class);
-//                if (object == null) {
-//                    continue;
-//                }
-//
-//
-//                try {
-//                    String className = ClassName.get(item.asType()).toString();
-//                    bindViewMethodSpecBuilder.addCode(String.format(
-//                            "try {\n   activity.%s = (%s)Class.forName(\"%s\").newInstance();\n } catch (Exception e) { \n   e.printStackTrace();\n}\n",
-//                            item.getSimpleName(),
-//                            className,
-//                            className));
-//
-//
-//                    bindViewMethodSpecBuilder.addCode("try{\n");
-//
-//                    for (String engine : allName) {
-//
-//                        engine = String.format("(%s)Class.forName(\"%s\").newInstance()",
-//                                engine, engine);
-//
-//                        bindViewMethodSpecBuilder.addStatement(String.format(
-//                                "   activity.%s.add(%s)",
-//                                item.getSimpleName(),
-//                                engine, engine));
-//                    }
-//
-//                    bindViewMethodSpecBuilder.addCode("} catch (Exception e) {\n    e.printStackTrace();\n}\n");
-//
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            TypeSpec typeSpec = TypeSpec.classBuilder("DILogin")
-//                    .superclass(TypeName.get(typeElement.asType()))
-//                    .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-//                    .addMethod(bindViewMethodSpecBuilder.build())
-//                    .build();
-//            JavaFile javaFile = JavaFile.builder(getPackageName(typeElement), typeSpec).build();
-//            try {
-//                javaFile.writeTo(processingEnv.getFiler());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
         return true;
     }
 

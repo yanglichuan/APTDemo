@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DIEngine {
     int value() default 0;
+    String pkg() default "";
 }

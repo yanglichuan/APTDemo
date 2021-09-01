@@ -5,7 +5,6 @@ package com.example.ggmodule;
 
 import com.example.basecore.IEngine;
 
-import cn.tim.annotation.DICreater;
 import cn.tim.annotation.DIEngine;
 
 /**
@@ -14,8 +13,7 @@ import cn.tim.annotation.DIEngine;
  * @email yanglichuan@ksjgs.com
  * @detail :
  */
-@DICreater
-@DIEngine
+@DIEngine(pkg = "com.example.fbmodule.GGEngine")
 public class GGEngine implements IEngine {
 
     @Override

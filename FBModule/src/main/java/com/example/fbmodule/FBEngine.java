@@ -3,9 +3,10 @@ package com.example.fbmodule;
 
 
 
+import androidx.annotation.Keep;
+
 import com.example.basecore.IEngine;
 
-import cn.tim.annotation.DICreater;
 import cn.tim.annotation.DIEngine;
 
 
@@ -15,7 +16,8 @@ import cn.tim.annotation.DIEngine;
  * @email yanglichuan@ksjgs.com
  * @detail :
  */
-@DIEngine
+@Keep
+@DIEngine(pkg = "com.example.fbmodule.FBEngine")
 public class FBEngine implements IEngine {
     @Override
     public String getName(){
