@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DICreater {
+public @interface DIEngine {
     int value() default 0;
+    String pkg() default "";
 }
