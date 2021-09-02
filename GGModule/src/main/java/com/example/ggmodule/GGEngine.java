@@ -3,9 +3,11 @@ package com.example.ggmodule;
 
 
 
+import androidx.annotation.Keep;
+
 import com.example.basecore.IEngine;
 
-import cn.tim.annotation.DIEngine;
+import cn.tim.annotation.DILoginEngine;
 
 /**
  * @author (ylc)
@@ -13,7 +15,8 @@ import cn.tim.annotation.DIEngine;
  * @email yanglichuan@ksjgs.com
  * @detail :
  */
-@DIEngine(pkg = "com.example.fbmodule.GGEngine")
+@Keep
+@DILoginEngine
 public class GGEngine implements IEngine {
 
     @Override

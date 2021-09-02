@@ -1,5 +1,8 @@
 package com.charlie.plugin
 
+import com.charlie.plugin.utils.LogUtil
+import com.charlie.plugin.utils.Utils
+import com.charlie.plugin.visitor.InjectLoginVisitor
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import java.util.*

@@ -5,7 +5,7 @@ package cn.tim.apt_demo;
 
 import com.example.basecore.IEngine;
 
-import cn.tim.annotation.DIEngine;
+import cn.tim.annotation.DILoginEngine;
 
 
 /**
@@ -14,9 +14,8 @@ import cn.tim.annotation.DIEngine;
  * @email yanglichuan@ksjgs.com
  * @detail :
  */
-@DIEngine
+@DILoginEngine
 public class AliEngine implements IEngine {
-
     @Override
     public String getName(){
         return "fb";

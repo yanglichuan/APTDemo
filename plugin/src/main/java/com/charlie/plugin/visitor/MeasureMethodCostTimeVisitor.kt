@@ -1,4 +1,4 @@
-package com.charlie.plugin;
+package com.charlie.plugin.visitor;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type

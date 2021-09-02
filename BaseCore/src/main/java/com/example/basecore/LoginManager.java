@@ -1,6 +1,4 @@
-package cn.tim.apt_demo;
-
-import com.example.basecore.IEngine;
+package com.example.basecore;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -13,7 +11,7 @@ import java.util.Set;
  */
 public class LoginManager {
 
-    ArrayList<IEngine> list = new ArrayList<>();
+   public   ArrayList<IEngine> list = new ArrayList<>();
 
     public void add(IEngine engine){
         list.add(engine);

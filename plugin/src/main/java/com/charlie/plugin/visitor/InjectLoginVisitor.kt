@@ -1,9 +1,9 @@
-package com.charlie.plugin;
+package com.charlie.plugin.visitor;
 
+import com.charlie.plugin.PluginVisitor
+import com.charlie.plugin.utils.LogUtil
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.commons.AdviceAdapter
 
 /**
@@ -77,7 +77,7 @@ class InjectLoginVisitor(
 //        mv.visitInsn(POP)
 
 
-        if(className!!.contains("DILoginIn", true) && name.equals("getClassNames")){
+        if(className!!.contains("DILoginIn_", true) && name.equals("getClassNames")){
 
 //            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
 

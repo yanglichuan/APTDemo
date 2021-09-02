@@ -7,7 +7,7 @@ import androidx.annotation.Keep;
 
 import com.example.basecore.IEngine;
 
-import cn.tim.annotation.DIEngine;
+import cn.tim.annotation.DILoginEngine;
 
 
 /**
@@ -17,7 +17,7 @@ import cn.tim.annotation.DIEngine;
  * @detail :
  */
 @Keep
-@DIEngine(pkg = "com.example.fbmodule.FBEngine")
+@DILoginEngine
 public class FBEngine implements IEngine {
     @Override
     public String getName(){

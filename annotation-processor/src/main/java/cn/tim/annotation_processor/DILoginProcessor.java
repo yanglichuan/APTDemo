@@ -11,7 +11,6 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -23,71 +22,79 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-import cn.tim.annotation.DIObject;
+import cn.tim.annotation.DILoginManager;
 
 @AutoService(Processor.class)
-public class DIProcessor extends AbstractProcessor {
+public class DILoginProcessor extends AbstractProcessor {
     private Elements elementUtils;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-//        Set<String> annotations = new TreeSet<>();
-//        annotations.add(DIProvider.class.getCanonicalName());
-//        annotations.add(DIObject.class.getCanonicalName());
-//        return annotations;
         // 规定需要处理的注解
-        return Collections.singleton(DIObject.class.getCanonicalName());
+        return Collections.singleton(DILoginManager.class.getCanonicalName());
     }
 
-    private String createBean(String s) {
-        String ddd = String.format("(%s)Class.forName(\"%s\").newInstance()", s, s);
-        return ddd;
+    private String createBean(String className) {
+        String createStr = String.format("(%s)Class.forName(\"%s\").newInstance()", className, className);
+        return createStr;
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         System.out.println("Login Processor ~~~");
-        Set<? extends Element> members = roundEnv.getElementsAnnotatedWith(DIObject.class);
-        for (Element item : members) {
+        Set<? extends Element> members = roundEnv.getElementsAnnotatedWith(DILoginManager.class);
+        if(members== null || members.size() == 0){
+            return true;
+        }
 
+        for (Element item : members) {
+            /**
+             * 所在的类
+             */
             TypeElement enclosingElement = (TypeElement) item.getEnclosingElement();
 
-            MethodSpec.Builder  getClassNames = MethodSpec.methodBuilder("getClassNames")
+            /**
+             * 创建方法 getClassNames 后期asm注入engine的类名用
+             */
+            MethodSpec.Builder  getClassNamesMethodSpecBuilder = MethodSpec.methodBuilder("getClassNames")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .returns(ParameterizedTypeName.get(
                             ClassName.get("java.util", "TreeSet"),
                             ClassName.get("java.lang", "String")));
-            getClassNames.addStatement("return null");
+            getClassNamesMethodSpecBuilder.addStatement("return null");
 
-
-
+            /**
+             * 依赖注入，host表示宿主
+             */
             MethodSpec.Builder  bindViewMethodSpecBuilder = MethodSpec.methodBuilder("inject")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .returns(TypeName.VOID)
-                    .addParameter(ClassName.get("android.content", "Context"), "context")
                     .addParameter(ClassName.get(enclosingElement.asType()), "host");
 
-
-
-
-            DIObject object = item.getAnnotation(DIObject.class);
+            DILoginManager object = item.getAnnotation(DILoginManager.class);
             if (object == null) {
                 continue;
             }
-            try {
-                createTargetObject(bindViewMethodSpecBuilder, item);
-                addEngines(bindViewMethodSpecBuilder, "context");
 
+            try {
+                bindViewMethodSpecBuilder.addCode("try{\n");
+                /**
+                 * 创建目标对象
+                 */
+                createTargetObject(bindViewMethodSpecBuilder, item);
+                /**
+                 *
+                 */
+                addEngines(bindViewMethodSpecBuilder);
+                bindViewMethodSpecBuilder.addCode("} catch (Exception e) {\n    e.printStackTrace();\n}\n");
+
+                createFile(getClassNamesMethodSpecBuilder,
+                        bindViewMethodSpecBuilder,
+                        enclosingElement);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            System.out.println("xxxxxxx22222");
-
-
-            createFile(getClassNames, bindViewMethodSpecBuilder, enclosingElement);
         }
-
         return true;
     }
 
@@ -97,7 +104,7 @@ public class DIProcessor extends AbstractProcessor {
      * @param enclosingElement
      */
     private void createFile(MethodSpec.Builder getClassNames, MethodSpec.Builder bindViewMethodSpecBuilder, TypeElement enclosingElement) {
-        TypeSpec typeSpec = TypeSpec.classBuilder("DiLoginIn" + enclosingElement.getSimpleName())
+        TypeSpec typeSpec = TypeSpec.classBuilder("DILoginIn_" + enclosingElement.getSimpleName())
                 .superclass(TypeName.get(enclosingElement.asType()))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addMethod(getClassNames.build())
@@ -116,13 +123,12 @@ public class DIProcessor extends AbstractProcessor {
      *
      * @param bindViewMethodSpecBuilder
      */
-    private void addEngines(MethodSpec.Builder bindViewMethodSpecBuilder, String param) {
-        bindViewMethodSpecBuilder.addCode("    java.util.Set<String> fileNameByPackageName = com.example.basecore.util.ClassUtils.getFileNameByPackageName(" + param + ", \"com.ushareit.login.apt\");\n\n" +
-                "    for (String s :  getClassNames()) {\n" +
-                "       host.mLoginManager.add((com.example.basecore.IEngine) Class.forName(s).getDeclaredMethod(\"get\").invoke(null));\n" +
+    private void addEngines(MethodSpec.Builder bindViewMethodSpecBuilder) {
+        bindViewMethodSpecBuilder.addCode("    if(getClassNames()!=null){\n" +
+                "            for (String s :  getClassNames()) {\n" +
+                "                host.mLoginManager.add((com.example.basecore.IEngine) Class.forName(s).getDeclaredMethod(\"get\").invoke(null));\n" +
+                "            }\n" +
                 "    }\n");
-
-        bindViewMethodSpecBuilder.addCode("} catch (Exception e) {\n    e.printStackTrace();\n}\n");
     }
 
 
@@ -134,7 +140,6 @@ public class DIProcessor extends AbstractProcessor {
      */
     private void createTargetObject(MethodSpec.Builder bindViewMethodSpecBuilder, Element item) {
         String className = ClassName.get(item.asType()).toString();
-        bindViewMethodSpecBuilder.addCode("try{\n");
         bindViewMethodSpecBuilder.addCode(String.format(
                 "    host.%s = (%s)Class.forName(\"%s\").newInstance();\n",
                 item.getSimpleName(),
@@ -157,3 +162,25 @@ public class DIProcessor extends AbstractProcessor {
         return SourceVersion.RELEASE_8;
     }
 }
+
+//
+//public final class DILoginIn_MainActivity extends MainActivity {
+//    public static TreeSet<String> getClassNames() {
+//        return null;
+//    }
+//
+//    public static void inject(MainActivity host) {
+//        try{
+//            host.mLoginManager = (cn.tim.apt_demo.LoginManager)Class.forName("cn.tim.apt_demo.LoginManager").newInstance();
+//            if(getClassNames()!=null){
+//                for (String s :  getClassNames()) {
+//                    host.mLoginManager.add((com.example.basecore.IEngine) Class.forName(s).getDeclaredMethod("get").invoke(null));
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}
+
+

@@ -1,23 +1,15 @@
 package com.charlie.plugin
 
-import com.android.build.api.transform.*
+import com.android.build.api.transform.QualifiedContent
+import com.android.build.api.transform.Transform
+import com.android.build.api.transform.TransformInvocation
 import com.android.build.gradle.internal.pipeline.TransformManager
-import com.android.ddmlib.Log
-import com.android.utils.FileUtils
 import com.google.common.collect.ImmutableSet
-import groovy.io.FileType
-import org.gradle.internal.impldep.bsh.commands.dir
-import org.objectweb.asm.*
-import org.objectweb.asm.commons.AdviceAdapter
-import java.io.*
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
 
 /**
  * created by charlie on 2021/6/30
  */
-class DemoTransform : Transform() {
+class TransformLogin : Transform() {
 
     override fun getName(): String {
         return "DemoTransform"
@@ -34,7 +26,7 @@ class DemoTransform : Transform() {
     }
 
     override fun isIncremental(): Boolean {
-        return false
+        return true
     }
 
     override fun transform(transformInvocation: TransformInvocation?) {

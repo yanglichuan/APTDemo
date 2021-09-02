@@ -1,4 +1,4 @@
-package com.charlie.plugin;
+package com.charlie.plugin.utils;
 
 import java.io.File;
 import java.io.FileWriter;
