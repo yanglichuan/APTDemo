@@ -26,9 +26,7 @@ class MeasureMethodCostTimeVisitor(
         mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         startId = newLocal(Type.LONG_TYPE)
         mv.visitVarInsn(LSTORE, startId)
-
     }
-
 
     override fun onMethodExit(opcode: Int) {
         super.onMethodExit(opcode)
@@ -52,6 +50,7 @@ class MeasureMethodCostTimeVisitor(
         mv.visitIntInsn(BIPUSH, 32)
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(C)Ljava/lang/StringBuilder;", false)
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false)
+
         mv.visitMethodInsn(INVOKESTATIC, "android/util/Log", "d", "(Ljava/lang/String;Ljava/lang/String;)I", false)
         mv.visitInsn(POP)
 

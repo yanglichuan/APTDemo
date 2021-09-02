@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -23,7 +24,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import cn.tim.annotation.DIObject;
-import cn.tim.annotation.DIProvider;
 
 @AutoService(Processor.class)
 public class DIProcessor extends AbstractProcessor {
@@ -50,17 +50,25 @@ public class DIProcessor extends AbstractProcessor {
         Set<? extends Element> members = roundEnv.getElementsAnnotatedWith(DIObject.class);
         for (Element item : members) {
 
-            MethodSpec.Builder bindViewMethodSpecBuilder = null;
-            TypeElement typeElement = (TypeElement) item.getEnclosingElement();
-            if (members.size() > 0) {
-                bindViewMethodSpecBuilder = MethodSpec.methodBuilder("inject")
-                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                        .returns(TypeName.VOID)
-                        .addParameter(ClassName.get("android.content", "Context"), "context")
-                        .addParameter(ClassName.get(typeElement.asType()), "host");
-            } else {
-                return true;
-            }
+            TypeElement enclosingElement = (TypeElement) item.getEnclosingElement();
+
+            MethodSpec.Builder  getClassNames = MethodSpec.methodBuilder("getClassNames")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .returns(ParameterizedTypeName.get(
+                            ClassName.get("java.util", "TreeSet"),
+                            ClassName.get("java.lang", "String")));
+            getClassNames.addStatement("return null");
+
+
+
+            MethodSpec.Builder  bindViewMethodSpecBuilder = MethodSpec.methodBuilder("inject")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .returns(TypeName.VOID)
+                    .addParameter(ClassName.get("android.content", "Context"), "context")
+                    .addParameter(ClassName.get(enclosingElement.asType()), "host");
+
+
+
 
             DIObject object = item.getAnnotation(DIObject.class);
             if (object == null) {
@@ -77,24 +85,25 @@ public class DIProcessor extends AbstractProcessor {
             System.out.println("xxxxxxx22222");
 
 
-            createFile(bindViewMethodSpecBuilder,typeElement);
+            createFile(getClassNames, bindViewMethodSpecBuilder, enclosingElement);
         }
 
         return true;
     }
 
     /**
-     *  创建文件
+     * 创建文件
      * @param bindViewMethodSpecBuilder
-     * @param typeElement
+     * @param enclosingElement
      */
-    private void createFile(MethodSpec.Builder bindViewMethodSpecBuilder, TypeElement typeElement) {
-        TypeSpec typeSpec = TypeSpec.classBuilder("DiLoginIn" + typeElement.getSimpleName())
-                .superclass(TypeName.get(typeElement.asType()))
+    private void createFile(MethodSpec.Builder getClassNames, MethodSpec.Builder bindViewMethodSpecBuilder, TypeElement enclosingElement) {
+        TypeSpec typeSpec = TypeSpec.classBuilder("DiLoginIn" + enclosingElement.getSimpleName())
+                .superclass(TypeName.get(enclosingElement.asType()))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addMethod(getClassNames.build())
                 .addMethod(bindViewMethodSpecBuilder.build())
                 .build();
-        JavaFile javaFile = JavaFile.builder(getPackageName(typeElement), typeSpec).build();
+        JavaFile javaFile = JavaFile.builder(getPackageName(enclosingElement), typeSpec).build();
         try {
             javaFile.writeTo(processingEnv.getFiler());
         } catch (IOException e) {
@@ -104,11 +113,12 @@ public class DIProcessor extends AbstractProcessor {
 
     /**
      * 添加引擎
+     *
      * @param bindViewMethodSpecBuilder
      */
-    private void addEngines(MethodSpec.Builder bindViewMethodSpecBuilder,String param) {
-        bindViewMethodSpecBuilder.addCode("    java.util.Set<String> fileNameByPackageName = com.example.basecore.util.ClassUtils.getFileNameByPackageName("+param+", \"com.ushareit.login.apt\");\n\n" +
-                "    for (String s : fileNameByPackageName) {\n" +
+    private void addEngines(MethodSpec.Builder bindViewMethodSpecBuilder, String param) {
+        bindViewMethodSpecBuilder.addCode("    java.util.Set<String> fileNameByPackageName = com.example.basecore.util.ClassUtils.getFileNameByPackageName(" + param + ", \"com.ushareit.login.apt\");\n\n" +
+                "    for (String s :  getClassNames()) {\n" +
                 "       host.mLoginManager.add((com.example.basecore.IEngine) Class.forName(s).getDeclaredMethod(\"get\").invoke(null));\n" +
                 "    }\n");
 
@@ -118,6 +128,7 @@ public class DIProcessor extends AbstractProcessor {
 
     /**
      * 创建目标对象
+     *
      * @param bindViewMethodSpecBuilder
      * @param item
      */

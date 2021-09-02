@@ -1,12 +1,12 @@
 plugins {
     id 'com.android.application'
-    id 'com.yxhuang.android'
+//    id 'com.yxhuang.android'
     id 'com.charlie.plugin'
 }
-
-analytics {
-    disableAutoTrack = false
-}
+//
+//analytics {
+//    disableAutoTrack = false
+//}
 
 android {
     compileSdkVersion 30

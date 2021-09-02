@@ -5,5 +5,5 @@ rootProject.name = "apt-demo"
 include ':FBModule'
 include ':GGModule'
 include ':BaseCore'
-include ':asmplugin'
+//include ':asmplugin'
 include ':plugin'

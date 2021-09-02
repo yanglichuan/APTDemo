@@ -6,11 +6,11 @@ dependencies {
     implementation localGroovy()
 
     // 添加 asm
-    implementation 'org.ow2.asm:asm:7.2'
-    implementation 'org.ow2.asm:asm-commons:7.2'
-    implementation 'org.ow2.asm:asm-analysis:7.2'
+    implementation 'org.ow2.asm:asm:8.0.1'
+    implementation 'org.ow2.asm:asm-commons:8.0.1'
+    implementation 'org.ow2.asm:asm-analysis:8.0.1'
     implementation 'org.ow2.asm:asm-util:7.1'
-    implementation 'org.ow2.asm:asm-tree:7.2'
+    implementation 'org.ow2.asm:asm-tree:8.0.1'
 
     compileOnly 'com.android.tools.build:gradle:3.4.1', {
         exclude group:'org.ow2.asm'
@@ -33,6 +33,6 @@ uploadArchives{
         pom.artifactId = 'autotrack.android'
 
         // 插件版本号
-        pom.version = '1.0.0'
+        pom.version = '1.0.3'
     }
 }

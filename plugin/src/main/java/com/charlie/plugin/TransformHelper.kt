@@ -23,6 +23,7 @@ object TransformHelper {
             Format.JAR
         )
         FileUtils.copyFile(jarInput.file, destDir)
+        handleJarFile(jarInput, destDir)
     }
 
 
@@ -142,7 +143,7 @@ object TransformHelper {
             val classReader = ClassReader(sourceBytes)
             val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
             val classVisitor = PluginVisitor(Opcodes.ASM7, classWriter)
-            classReader.accept(classVisitor, ClassReader.SKIP_DEBUG)
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
             return classWriter.toByteArray()
         } catch (exception: Exception) {
             exception.printStackTrace()

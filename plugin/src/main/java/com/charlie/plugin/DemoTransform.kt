@@ -4,6 +4,7 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.ddmlib.Log
 import com.android.utils.FileUtils
+import com.google.common.collect.ImmutableSet
 import groovy.io.FileType
 import org.gradle.internal.impldep.bsh.commands.dir
 import org.objectweb.asm.*
@@ -27,11 +28,13 @@ class DemoTransform : Transform() {
     }
 
     override fun getScopes(): MutableSet<in QualifiedContent.Scope> {
-        return TransformManager.SCOPE_FULL_PROJECT
+        return ImmutableSet.of<QualifiedContent.ScopeType>(
+            QualifiedContent.Scope.SUB_PROJECTS, QualifiedContent.Scope.PROJECT,
+        )
     }
 
     override fun isIncremental(): Boolean {
-        return true
+        return false
     }
 
     override fun transform(transformInvocation: TransformInvocation?) {
@@ -43,11 +46,11 @@ class DemoTransform : Transform() {
             }
             //处理输入的文件夹和jars
             transformInvocation.inputs.forEach { transformInput ->
-                System.out.println("handle directory ${transformInput.directoryInputs.size}")
+                println("handle directory ${transformInput.directoryInputs.size}")
                 transformInput.directoryInputs.forEach {
                     TransformHelper.transformDirectory(it, transformInvocation.outputProvider, transformInvocation.isIncremental)
                 }
-                System.out.println("handle jars ${transformInput.jarInputs.size}")
+                println("handle jars ${transformInput.jarInputs.size}")
                 //jar暂时不处理，只是复制文件
                 transformInput.jarInputs.forEach {
                     TransformHelper.transformJar(it, transformInvocation.outputProvider, transformInvocation.isIncremental)

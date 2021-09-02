@@ -13,6 +13,6 @@ public class AnalyticsDefaultMethodVisitor extends AdviceAdapter {
 
     protected AnalyticsDefaultMethodVisitor(MethodVisitor methodVisitor, int access, String name,
                                             String descriptor) {
-        super(Opcodes.ASM6, methodVisitor, access, name, descriptor);
+        super(Opcodes.ASM8, methodVisitor, access, name, descriptor);
     }
 }

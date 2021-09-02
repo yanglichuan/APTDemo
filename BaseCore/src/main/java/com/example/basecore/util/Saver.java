@@ -1,7 +1,9 @@
 package com.example.basecore.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 /**
  * @author (ylc)
@@ -13,7 +15,12 @@ public class Saver {
 
     private static final String Key = "key";
     public static void save(HashSet<String> set){
-        
+
+        ArrayList<String> pkgs = new ArrayList<>();
+
+
+        TreeSet<String> strings = new TreeSet<>();
+        strings.addAll(pkgs);
     }
 
 }

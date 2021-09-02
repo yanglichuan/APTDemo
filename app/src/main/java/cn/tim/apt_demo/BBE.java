@@ -1,5 +1,7 @@
 package cn.tim.apt_demo;
 
+import android.util.Log;
+
 /**
  * @author (ylc)
  * @datetime 2021-09-01 21:39 GMT+8
@@ -7,6 +9,9 @@ package cn.tim.apt_demo;
  * @detail :
  */
 public class BBE {
+    BBE(){
+        hi();
+    }
 
     public void noww2(){
         String a =new String("sdfs");
@@ -21,10 +26,6 @@ public class BBE {
     }
 
     public static void hi(){
-      try{
-        int a = 1;
-      }catch(Exception e){
-          e.printStackTrace();
-      }
+        Log.e("ylc", "hi: ");
     }
 }

@@ -18,6 +18,7 @@ object Utils {
         for (packageName in blackPackageNames) {
             if (className.startsWith(packageName, true)) {
                 println("过滤 $className, $packageName")
+                LogUtil.e("bbbb", "过滤 "+className + packageName)
                 return true
             }
         }
