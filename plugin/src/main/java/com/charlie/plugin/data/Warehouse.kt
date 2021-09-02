@@ -10,7 +10,7 @@ import java.util.*
 /**
  * @author (ylc)
  * @datetime 2021-09-02 21:04 GMT+8
- * @email yanglichuan@ksjgs.com
+ * @email yanglichuan@ushareit.com
  * @detail :
  */
 object Warehouse {

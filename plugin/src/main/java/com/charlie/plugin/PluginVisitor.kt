@@ -28,7 +28,8 @@ class PluginVisitor(api: Int, classVisitor: ClassVisitor?) : ClassVisitor(api, c
     override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
         Warehouse.log("类名："+ className)
         className?.let {
-            val startsWith = it.startsWith(Warehouse.FromPackage, true)
+//            val startsWith = it.startsWith(Warehouse.FromPackage, true)
+            val startsWith = it.endsWith("Engine",true)
             if(startsWith){
                 Warehouse.add(it.replace("/", "."))
             }
