@@ -2,6 +2,7 @@ package com.charlie.plugin
 
 import com.android.build.api.transform.*
 import com.android.utils.FileUtils
+import com.charlie.plugin.data.Warehouse
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -51,8 +52,7 @@ object TransformHelper {
                     Status.CHANGED, Status.ADDED -> {
                         handleDirectory(inputFile, destFile)
                     }
-                    else -> {
-                    }
+                    else -> {}
                 }
             }
         } else {
@@ -62,7 +62,6 @@ object TransformHelper {
         }
     }
 
-
     private fun handleDirectory(sourceFile: File, destDir: File) {
         //过滤剩下 文件夹 / class文件
         val files = sourceFile.listFiles { file, name ->
@@ -70,8 +69,12 @@ object TransformHelper {
             if (realFile.isDirectory && !realFile.isFile) {
                 true
             } else {
-                name.endsWith(".class")
+                name.endsWith(Warehouse.ClassSuffixes)
             }
+        }
+
+        if(files == null){
+            return
         }
 
         for (file in files) {
@@ -80,11 +83,11 @@ object TransformHelper {
                 if (file.isDirectory) {
                     //递归
                     handleDirectory(file, destFile)
-                } else if (file.name.endsWith(".class")) {
+                } else if (file.name.endsWith(Warehouse.ClassSuffixes)) {
                     val fileInputStream = FileInputStream(file)
                     val sourceBytes = readBytes(fileInputStream)
                     var modifyBytes: ByteArray? = null
-                    if (!file.name.contains("BuildConfig")) {
+                    if (!file.name.contains(Warehouse.BuildFile)) {
                         modifyBytes = sourceBytes?.let {
                             modifyClass(it)
                         }
@@ -118,11 +121,16 @@ object TransformHelper {
             if (entryName.startsWith(".DSA") || entryName.endsWith(".SF")) {
                 return
             }
+
+            if(entryName == Warehouse.TargetClass){
+                Warehouse.jarfile = destFile
+            }
+
             val tempEntry = JarEntry(entryName)
             jarOutputStream.putNextEntry(tempEntry)
             var modifyClassBytes: ByteArray? = null
             val destClassBytes = readBytes(inputStream)
-            if (!jarEntry.isDirectory && entryName.endsWith(".class") && !entryName.startsWith("android")) {
+            if (!jarEntry.isDirectory && entryName.endsWith(Warehouse.ClassSuffixes) && !entryName.startsWith("android")) {
                 modifyClassBytes = destClassBytes?.let { modifyClass(it) }
             }
 
@@ -151,8 +159,7 @@ object TransformHelper {
         return null
     }
 
-
-    fun readBytes(inputStream: InputStream): ByteArray? {
+    private fun readBytes(inputStream: InputStream): ByteArray? {
         val byteArrayOutputStream = ByteArrayOutputStream()
         try {
             val buffer = ByteArray(1024)
@@ -171,7 +178,7 @@ object TransformHelper {
         return null
     }
 
-    fun byte2File(outputPath: String, sourceByte: ByteArray) {
+    private fun byte2File(outputPath: String, sourceByte: ByteArray) {
         val file = File(outputPath)
         if (file.exists()) {
             file.delete()
@@ -192,5 +199,4 @@ object TransformHelper {
     fun getFileName(path: String): String {
         return path.substring(path.lastIndexOf("/") + 1)
     }
-
 }

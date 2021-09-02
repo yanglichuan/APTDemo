@@ -1,5 +1,7 @@
 package com.charlie.plugin.utils;
 
+import com.charlie.plugin.data.Warehouse;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -16,8 +18,6 @@ public class LogUtil {
     private static final int LOG_FILE_TOTAL = 10;
     // 单日志文件大小上限 MB
     private static final long LOG_SIZE_MAX = 10;
-    // 日志文件输出文件夹
-    private static final String LOG_FILE_PRINT_DIR = "/Users/shareit/deldel";
 
     // 文件名格式
     private static final SimpleDateFormat FILE_NAME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss-SSS");
@@ -95,7 +95,7 @@ public class LogUtil {
     private static File getFile() {
 
         // 确认文件夹是否存在
-        File fileDir = new File(LOG_FILE_PRINT_DIR);
+        File fileDir = new File(Warehouse.LOG_FILE_PRINT_DIR);
         if (!fileDir.exists()) {
             fileDir.mkdirs();
         }
@@ -162,7 +162,7 @@ public class LogUtil {
 
     // 创建一个新的日志文件
     private static File createLogFile() {
-        return new File(LOG_FILE_PRINT_DIR + FILE_NAME_FORMAT.format(new Date(System.currentTimeMillis())) + ".log");
+        return new File(Warehouse.LOG_FILE_PRINT_DIR + FILE_NAME_FORMAT.format(new Date(System.currentTimeMillis())) + ".log");
     }
 
     // 计算文件大小，返回单位 MB

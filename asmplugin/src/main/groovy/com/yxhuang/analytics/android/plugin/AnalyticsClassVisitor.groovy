@@ -15,7 +15,7 @@ class AnalyticsClassVisitor extends ClassVisitor {
 
     private String className ;
     AnalyticsClassVisitor(ClassVisitor classVisitor) {
-        super(Opcodes.ASM8, classVisitor)
+        super(Opcodes.ASM7, classVisitor)
         mClassVisitor = classVisitor
     }
 

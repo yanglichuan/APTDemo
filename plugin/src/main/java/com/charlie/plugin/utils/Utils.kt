@@ -1,5 +1,7 @@
 package com.charlie.plugin.utils
 
+import com.charlie.plugin.data.Warehouse
+
 
 object Utils {
 
@@ -14,7 +16,7 @@ object Utils {
         for (packageName in blackPackageNames) {
             if (className.startsWith(packageName, true)) {
                 println("过滤 $className, $packageName")
-                LogUtil.e("bbbb", "过滤了 =  " + className + packageName)
+                Warehouse.log("过滤了 =  " + className + packageName)
                 return true
             }
         }
@@ -33,6 +35,6 @@ object Utils {
         "kotlin",
         "java",
         "android",
-        "android"
+        "androidx"
     )
 }

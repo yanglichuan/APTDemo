@@ -2,6 +2,7 @@ package com.example.basecore;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author (ylc)
@@ -11,17 +12,33 @@ import java.util.Set;
  */
 public class LoginManager {
 
-    LoginManager(){
+    public LoginManager() {
+        initEngine();
+    }
+
+    /**
+     * asm会自动注入
+     */
+    private void initEngine() {
 
     }
 
-   public  ArrayList<IEngine> list = new ArrayList<>();
+    public void asmCall(String engine){
+        try{
+            IEngine iEngine = (IEngine) Class.forName(engine).getDeclaredMethod("get").invoke(null);
+            add(iEngine);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
-    public void add(IEngine engine){
+    public ArrayList<IEngine> getList() {
+        return list;
+    }
+
+    private ArrayList<IEngine> list = new ArrayList<>();
+
+    private void add(IEngine engine) {
         list.add(engine);
-    }
-
-    public void addAll(Set<IEngine>engines){
-        list.addAll(engines);
     }
 }

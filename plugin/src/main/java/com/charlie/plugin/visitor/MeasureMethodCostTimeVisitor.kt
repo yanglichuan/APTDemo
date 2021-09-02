@@ -1,11 +1,13 @@
 package com.charlie.plugin.visitor;
 
+import com.charlie.plugin.data.Warehouse
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type
 import org.objectweb.asm.commons.AdviceAdapter
 
 /**
  * 方法耗时
+ * 暂时不用
  */
 class MeasureMethodCostTimeVisitor(
     var className: String?, methodVisitor:MethodVisitor,
@@ -18,7 +20,7 @@ class MeasureMethodCostTimeVisitor(
 
     override fun onMethodEnter() {
         super.onMethodEnter()
-        if (name == "<init>") {
+        if (name == Warehouse.InitMethod) {
             //跳过构造
             return
         }
@@ -30,7 +32,7 @@ class MeasureMethodCostTimeVisitor(
 
     override fun onMethodExit(opcode: Int) {
         super.onMethodExit(opcode)
-        if (name == "<init>") {
+        if (name == Warehouse.InitMethod) {
             return
         }
         println("onMethod Exit: $className, name = $name")
@@ -42,7 +44,7 @@ class MeasureMethodCostTimeVisitor(
         mv.visitLdcInsn(className)
         mv.visitTypeInsn(NEW, "java/lang/StringBuilder")
         mv.visitInsn(DUP)
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", Warehouse.InitMethod, "()V", false)
         mv.visitLdcInsn(name + ": cost = ")
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false)
         mv.visitVarInsn(LLOAD, endId)

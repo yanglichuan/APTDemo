@@ -1,18 +1,10 @@
 package com.charlie.plugin
 
-import com.charlie.plugin.utils.LogUtil
-import com.charlie.plugin.utils.Utils
-import com.charlie.plugin.visitor.InjectLoginVisitor
+import com.charlie.plugin.data.Warehouse
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
-import java.util.*
 
 class PluginVisitor(api: Int, classVisitor: ClassVisitor?) : ClassVisitor(api, classVisitor) {
-
-    companion object{
-        var list = TreeSet<String>()
-    }
-
     /**
      * 访问的类名字
      */
@@ -34,30 +26,15 @@ class PluginVisitor(api: Int, classVisitor: ClassVisitor?) : ClassVisitor(api, c
 
 
     override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): MethodVisitor {
-        LogUtil.e("类名：", className)
-
-        if(!className.isNullOrEmpty()){
-            val startsWith = className!!.startsWith("com/ushareit/login/apt", true)
+        Warehouse.log("类名："+ className)
+        className?.let {
+            val startsWith = it.startsWith(Warehouse.FromPackage, true)
             if(startsWith){
-                list.add(className!!.replace("/", "."))
+                Warehouse.add(it.replace("/", "."))
             }
         }
-        LogUtil.e("list = ", list.toString())
-
-
+        Warehouse.log("list = "+ Warehouse.listEnginePrivider.toString())
         var methodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions)
-
-        if (className != null && !Utils.ignorePackageNames(className!!)) {
-//            methodVisitor = DeleteLogVisitor(className, methodVisitor, access, name, descriptor)
-            LogUtil.e("mkkkkkkkkmmm", className + name)
-//            methodVisitor = MeasureMethodCostTimeVisitor(className, methodVisitor, access, name, descriptor)
-
-            /**
-             * 执行注入
-             */
-            methodVisitor = InjectLoginVisitor(className, methodVisitor, access, name, descriptor)
-
-        }
         return methodVisitor
     }
 }

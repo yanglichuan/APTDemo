@@ -12,8 +12,6 @@ import com.example.basecore.LoginManager;
 import cn.tim.annotation.DILoginManager;
 public class MainActivity extends AppCompatActivity {
 
-    @DILoginManager
-    LoginManager mLoginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +19,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         long l = System.currentTimeMillis();
-        DILoginIn_MainActivity.inject(this);
+//        DILoginIn_MainActivity.inject(this);
 
+        LoginManager mLoginManager = new LoginManager();
         Log.e("ylc", "time: end "+ (System.currentTimeMillis()-l));
-        Log.e("ylc", "time: end "+mLoginManager.list);
+        Log.e("ylc", "time: end "+mLoginManager.getList());
 
 
         findViewById(R.id.text2).setOnClickListener(new View.OnClickListener() {
