@@ -24,7 +24,7 @@ import javax.lang.model.util.Elements;
 
 import cn.tim.annotation.DILoginManager;
 
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class DILoginProcessor extends AbstractProcessor {
     private Elements elementUtils;
 
