@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableSet
 class TransformLogin : Transform() {
 
     override fun getName(): String {
-        return "DemoTransform"
+        return "TransformLogin"
     }
 
     override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> {
@@ -26,7 +26,7 @@ class TransformLogin : Transform() {
     }
 
     override fun isIncremental(): Boolean {
-        return true
+        return false
     }
 
     override fun transform(transformInvocation: TransformInvocation?) {
@@ -47,12 +47,8 @@ class TransformLogin : Transform() {
                 transformInput.jarInputs.forEach {
                     TransformHelper.transformJar(it, transformInvocation.outputProvider, transformInvocation.isIncremental)
                 }
-
             }
         }
-
     }
-
-
 }
 

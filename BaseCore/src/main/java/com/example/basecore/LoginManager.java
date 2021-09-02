@@ -11,7 +11,11 @@ import java.util.Set;
  */
 public class LoginManager {
 
-   public   ArrayList<IEngine> list = new ArrayList<>();
+    LoginManager(){
+
+    }
+
+   public  ArrayList<IEngine> list = new ArrayList<>();
 
     public void add(IEngine engine){
         list.add(engine);
