@@ -48,6 +48,7 @@ dependencies {
 
     implementation project(':FBModule')
     implementation project(':GGModule')
+    implementation project(':PPModule')
     implementation project(':BaseCore')
 
 }
